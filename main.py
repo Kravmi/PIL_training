@@ -1,37 +1,48 @@
 from PIL import Image
 from PIL import ImageFilter
 
-#открой файл с оригиналом картинки
-with Image.open('original.jpg') as original:
-    original.show()
-    print("Размер:", original.size)
-    print("Формат:", original.format)
-    print('Тип:', original.mode)
-#сделай оригинал изображения чёрно-белым
-    pic_gray = original.convert('L')
-    pic_gray.save('pic_gray.jpg')
-    pic_gray.show()
-    print("Размер:", pic_gray.size)
-    print("Формат:", pic_gray.format)
-    print('Тип:', pic_gray.mode)
-#сделай оригинал изображения размытым
-    pic_blured = original.filter(ImageFilter.GaussianBlur(5))
-    pic_blured.save('pic_blured.jpg')
-    pic_blured.show()
-    print("Размер:", pic_blured.size)
-    print("Формат:", pic_blured.format)
-    print('Тип:', pic_blured.mode)
-#поверни оригинал изображения на 180 градусов
-    pic_up = original.transpose(Image.ROTATE_180)
-    pic_up.save('pic_up.jpg')
-    pic_up.show()
-    print("Размер:", pic_up.size)
-    print("Формат:", pic_up.format)
-    print('Тип:', pic_up.mode)
-#зеркальный оригинал изображения
-    pic_flip = original.transpose(Image.FLIP_LEFT_RIGHT)
-    pic_flip.save('pic_flip.jpg')
-    pic_flip.show()
-    print("Размер:", pic_flip.size)
-    print("Формат:", pic_flip.format)
-    print('Тип:', pic_flip.mode)
+
+class ImageEditor():
+    def __init__(self, filename):
+        self.filename = filename
+        self.changed = []
+        self.original = None
+
+    def open(self):
+        try:
+            self.original = Image.open(self.filename)
+            self.original.show()
+        except IOError:
+            print('Файл не найден!')
+
+    def do_gray(self):
+        pic_gray = self.original.convert('L')
+        pic_gray.save(f'{self.filename[:-4]}_gray.jpg')
+        self.changed.append(pic_gray)
+        pic_gray.show()
+
+    def blured(self):
+        pic_blur = self.original.filter(ImageFilter.GaussianBlur(5))
+        pic_blur.save(f'{self.filename[:-4]}_blur.jpg')
+        self.changed.append(pic_blur)
+        pic_blur.show()
+
+    def flip(self):
+        pic_flip = self.original.transpose(Image.FLIP_LEFT_RIGHT)
+        pic_flip.save(f'{self.filename[:-4]}_flip.jpg')
+        self.changed.append(pic_flip)
+        pic_flip.show()
+
+    def up(self):
+        pic_up = self.original.transpose(Image.ROTATE_180)
+        pic_up.save(f'{self.filename[:-4]}_up.jpg')
+        self.changed.append(pic_up)
+        pic_up.show()
+
+
+image = ImageEditor('original.jpg')
+image.open()
+image.do_gray()
+image.blured()
+image.flip()
+image.up()
